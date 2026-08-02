@@ -1,0 +1,20 @@
+{
+  "name": "audiocontrol-hyperion-mqtt",
+  "version": "0.1.0",
+  "description": "MQTT bridge for AudioControl Hyperion (Axis eARC/Dante) processors over their TCP/23 ASCII protocol",
+  "type": "module",
+  "bin": {
+    "audiocontrol-hyperion-mqtt": "src/index.mjs"
+  },
+  "scripts": {
+    "start": "node src/index.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "mqtt": "^5.10.1"
+  },
+  "license": "MIT"
+}

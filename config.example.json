@@ -1,0 +1,17 @@
+{
+  "mqtt": {
+    "url": "mqtt://10.0.0.2:1883",
+    "username": null,
+    "password": null,
+    "prefix": "audiocontrol/hyperion",
+    "clientId": "audiocontrol-hyperion-mqtt"
+  },
+  "poll": { "intervalMs": 2000 },
+  "command": { "timeoutMs": 5000, "retries": 2 },
+  "reconnect": { "minMs": 1000, "maxMs": 30000, "factor": 2 },
+  "logLevel": "info",
+  "devices": [
+    { "id": "theatre", "host": "10.0.0.50", "port": 23 },
+    { "id": "living-room", "host": "10.0.0.51", "port": 23, "pollIntervalMs": 5000 }
+  ]
+}
