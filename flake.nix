@@ -120,10 +120,12 @@
                 PrivateDevices = true;
                 ProtectKernelTunables = true;
                 ProtectControlGroups = true;
-                RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+                # AF_UNIX needed for NSS/DNS via systemd-resolved's socket.
+                RestrictAddressFamilies = [ "AF_UNIX" "AF_INET" "AF_INET6" ];
                 RestrictNamespaces = true;
                 LockPersonality = true;
-                MemoryDenyWriteExecute = true;
+                # No MemoryDenyWriteExecute: V8's JIT requires W^X page
+                # transitions and hard-aborts at isolate init under MDWE.
               };
             };
           };
