@@ -69,6 +69,9 @@ export const commands = {
 
   'sub/mute': { build: (v) => `SET SUB ${asBool(v) ? 'MUTE' : 'UNMUTE'}`, expect: /^SUB (MUTE|UNMUTE)$/ },
 
+  // Digital-only by the device's own grammar (eARC is not defeatable).
+  'inputs/digital/volDefeat': { build: (v) => `SET VOL DEFEAT DIGITAL ${asBool(v) ? 'ON' : 'OFF'}`, expect: /^VOL DEFEAT DIGITAL (ON|OFF)$/ },
+
   // Per-input decode settings. arg = { input:'earc'|'digital', value }
   twoChMode: { build: ({ input, value }) => `SET 2CH MODE ${up(input)} ${modeToken(value)}`, expect: /^2CH MODE / },
   multiChMode: { build: ({ input, value }) => `SET MULTICH MODE ${up(input)} ${modeToken(value)}`, expect: /^MULTICH MODE / },
@@ -111,6 +114,7 @@ export const matchers = [
   { re: /^MULTICH MODE (EARC|DIGITAL) (.+)$/, f: (m) => ev(`inputs/${lo(m[1])}/multiChMode`, normMode(m[2])) },
   { re: /^INPUT GAIN (EARC|DIGITAL) (LOW|MED|HIGH)$/, f: (m) => ev(`inputs/${lo(m[1])}/gain`, lo(m[2])) },
   { re: /^DRC (EARC|DIGITAL) (OFF|ON|AUTO)$/, f: (m) => ev(`inputs/${lo(m[1])}/drc`, lo(m[2])) },
+  { re: /^VOL DEFEAT DIGITAL (ON|OFF)$/, f: (m) => ev('inputs/digital/volDefeat', m[1] === 'ON') },
 
   { re: /^MODEL (.+)$/, f: (m) => ev('info/model', m[1].trim()) },
   // `GET SER NUM` replies `SER NUM ...`; the `GET STA` dump says `SERIAL ...`.
@@ -142,6 +146,7 @@ export const polls = {
     'GET SUB MUTE',
     'GET 2CH MODE EARC', 'GET MULTICH MODE EARC', 'GET INPUT GAIN EARC', 'GET DRC EARC',
     'GET 2CH MODE DIGITAL', 'GET MULTICH MODE DIGITAL', 'GET INPUT GAIN DIGITAL', 'GET DRC DIGITAL',
+    'GET VOL DEFEAT DIGITAL',
     // NB: no GET MODEL — real Axis16 firmware answers it with stale content
     // from earlier replies (observed returning the MAC line and a VER INF
     // fragment on different tries). Model comes from the H header instead;

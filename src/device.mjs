@@ -11,6 +11,7 @@ import { createTransport } from './transport.mjs';
 import { parse, encode, isCommand } from './codec.mjs';
 import { initialState, applyEvent } from './state.mjs';
 import { polls, asBool } from './protocol.mjs';
+import { createHomeostat } from './homeostat.mjs';
 
 // Maps an MQTT `set/<suffix>` topic to a command invocation. Returns the args
 // object for encode(), or null if the suffix isn't a real command.
@@ -34,8 +35,12 @@ export const createDevice = (cfg, mqttBus, parentLog) => {
   const log = parentLog.child(id);
   let state = initialState;
   let pollTimer = null;
+  let homeostat = null;
 
-  const publishDelta = ({ path, value }) => mqttBus.publishStatus(id, path, value);
+  const publishDelta = ({ path, value }) => {
+    mqttBus.publishStatus(id, path, value);
+    homeostat?.onChange(path, value);
+  };
 
   const onLine = (line) => {
     const event = parse(line);
@@ -54,6 +59,7 @@ export const createDevice = (cfg, mqttBus, parentLog) => {
     onLine,
     onConnectedChange: (up) => {
       mqttBus.publishConnected(id, up);
+      homeostat?.onChange(['connected'], up);
       state = { ...state, connected: up };
       if (up) pollOnce(polls.full); // full re-sync on (re)connect
     },
@@ -84,6 +90,16 @@ export const createDevice = (cfg, mqttBus, parentLog) => {
     start() {
       // set/<id>/<anything...> — the tail after set/ is the command suffix.
       mqttBus.on(`${id}/set/#`, (params, payload) => runCommand(params.rest, payload));
+      if (cfg.homeostat) {
+        homeostat = createHomeostat({
+          cfg: cfg.homeostat,
+          deviceId: id,
+          name: cfg.name,
+          nativePrefix: cfg.nativePrefix,
+          onCommand: runCommand,
+          log: log.child('homeostat'),
+        });
+      }
       transport.start();
       pollTimer = setInterval(() => pollOnce(polls.core), cfg.pollIntervalMs);
       log.info('device started', { host: cfg.host, port: cfg.port, pollIntervalMs: cfg.pollIntervalMs });
@@ -91,6 +107,8 @@ export const createDevice = (cfg, mqttBus, parentLog) => {
     stop() {
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = null;
+      homeostat?.close();
+      homeostat = null;
       transport.stop();
     },
   };

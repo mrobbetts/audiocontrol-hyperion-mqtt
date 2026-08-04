@@ -10,6 +10,7 @@ const DEFAULTS = {
   command: { timeoutMs: 5000, retries: 2 },
   reconnect: { minMs: 1000, maxMs: 30000, factor: 2 },
   logLevel: 'info',
+  homeostat: null, // { root?, url?, username?, password? } — enables the capability facet
   devices: [],
 };
 
@@ -34,11 +35,24 @@ const normalizeDevices = (devices, cfg) => {
     if (!d.host) throw new Error(`device "${d.id}" is missing "host"`);
     return {
       id: d.id,
+      name: d.name ?? d.id,
       host: d.host,
       port: d.port ?? 23,
       pollIntervalMs: d.pollIntervalMs ?? cfg.poll.intervalMs,
       command: cfg.command,
       reconnect: cfg.reconnect,
+      nativePrefix: `${cfg.mqtt.prefix}/${d.id}`,
+      // capability facet: shared block, broker creds default to the bridge's;
+      // per-device opt-out with "homeostat": false
+      homeostat:
+        cfg.homeostat && d.homeostat !== false
+          ? {
+              root: cfg.homeostat.root ?? 'homeostat/1',
+              url: cfg.homeostat.url ?? cfg.mqtt.url,
+              username: cfg.homeostat.username ?? cfg.mqtt.username,
+              password: cfg.homeostat.password ?? cfg.mqtt.password,
+            }
+          : null,
     };
   });
 };

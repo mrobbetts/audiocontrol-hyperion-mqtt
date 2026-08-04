@@ -52,12 +52,13 @@ Topic prefix defaults to `audiocontrol/hyperion` (configurable).
 …/theatre/set/power             on|off
 …/theatre/set/input             earc|digital
 …/theatre/set/speaker/volume    30
-…/theatre/set/speaker/volume/step  +3 | -2      (native relative step)
+…/theatre/set/speaker/volumeStep   3 | -2       (native relative step)
 …/theatre/set/speaker/mute      on|off
 …/theatre/set/downmix/volume    25
 …/theatre/set/downmix/follow    off|on|defeat
 …/theatre/set/audioMode         dolbySurround
 …/theatre/set/inputs/earc/drc   auto
+…/theatre/set/inputs/digital/volDefeat  on|off  (digital only; eARC not defeatable)
 …/theatre/set/raw               SET VOL 40      (verbatim ACP passthrough)
 ```
 

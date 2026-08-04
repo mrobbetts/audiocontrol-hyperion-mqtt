@@ -10,8 +10,9 @@
   "command": { "timeoutMs": 5000, "retries": 2 },
   "reconnect": { "minMs": 1000, "maxMs": 30000, "factor": 2 },
   "logLevel": "info",
+  "homeostat": { "root": "homeostat/1" },
   "devices": [
-    { "id": "theatre", "host": "10.0.0.50", "port": 23 },
-    { "id": "living-room", "host": "10.0.0.51", "port": 23, "pollIntervalMs": 5000 }
+    { "id": "theatre", "name": "Theatre Axis", "host": "10.0.0.50", "port": 23 },
+    { "id": "living-room", "host": "10.0.0.51", "port": 23, "pollIntervalMs": 5000, "homeostat": false }
   ]
 }
