@@ -4,9 +4,17 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    # Capability-facet library. package.json depends on it as file:../homeostat
+    # (mirroring the dev checkout layout); the build materializes this input as
+    # that sibling directory. Private repo -> git+ssh (host-key identity on
+    # deploy hosts, personal key on dev machines).
+    homeostat = {
+      url = "git+ssh://git@github.com/mrobbetts/homeostat.git";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, homeostat }:
     let
       # System-agnostic NixOS module.
       nixosModule = { config, lib, pkgs, ... }:
@@ -16,14 +24,16 @@
           # Non-secret config rendered to the store. Secrets (mqtt password) are
           # injected at runtime via environmentFile -> MQTT_PASSWORD, which the
           # daemon layers over this file.
-          configFile = jsonFormat.generate "audiocontrol-hyperion.json" {
+          configFile = jsonFormat.generate "audiocontrol-hyperion.json" ({
             mqtt = {
               inherit (cfg.mqtt) url username prefix clientId;
             };
             poll.intervalMs = cfg.pollIntervalMs;
             logLevel = cfg.logLevel;
             devices = cfg.devices;
-          };
+          } // lib.optionalAttrs (cfg.homeostat != null) {
+            homeostat = { inherit (cfg.homeostat) root; };
+          });
         in {
           options.services.audiocontrol-hyperion-mqtt = {
             enable = lib.mkEnableOption "AudioControl Hyperion MQTT bridge";
@@ -57,6 +67,18 @@
               };
             };
 
+            homeostat = lib.mkOption {
+              type = lib.types.nullOr (lib.types.submodule {
+                options.root = lib.mkOption {
+                  type = lib.types.str;
+                  default = "homeostat/1";
+                  description = "Topic root for the capability facet.";
+                };
+              });
+              default = null;
+              description = "Publish devices as homeostat capability devices (null = off).";
+            };
+
             environmentFile = lib.mkOption {
               type = lib.types.nullOr lib.types.path;
               default = null;
@@ -86,6 +108,11 @@
               type = lib.types.listOf (lib.types.submodule {
                 options = {
                   id = lib.mkOption { type = lib.types.str; description = "Stable id used in MQTT topics."; };
+                  name = lib.mkOption {
+                    type = lib.types.nullOr lib.types.str;
+                    default = null;
+                    description = "Human-readable name (capability facet $desc); defaults to id.";
+                  };
                   host = lib.mkOption { type = lib.types.str; description = "Device IP/hostname."; };
                   port = lib.mkOption { type = lib.types.port; default = 23; description = "TCP port."; };
                   pollIntervalMs = lib.mkOption {
@@ -135,17 +162,29 @@
       nixosModules.default = nixosModule;
     }
     // flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        # Sibling layout so the lockfile's file:../homeostat link resolves.
+        srcWithDeps = pkgs.runCommand "hyperion-src" { } ''
+          mkdir -p $out
+          cp -r ${./.} $out/app
+          cp -r ${homeostat} $out/homeostat
+        '';
       in {
         packages.default = pkgs.buildNpmPackage {
           pname = "audiocontrol-hyperion-mqtt";
           version = "0.1.0";
-          src = ./.;
-          # TODO: after `npm install` generates package-lock.json, run
-          # `nix build` once and replace this with the hash it prints.
-          #npmDepsHash = pkgs.lib.fakeHash;
-          npmDepsHash = "sha256-OO3+X216PmLXj9l+ab+Q7plKdlePd4PRUQ+wcN83j5A=";
+          src = srcWithDeps;
+          sourceRoot = "hyperion-src/app";
+          npmDepsHash = "sha256-1QqtR44v3ydc5mjXHQN1M0srjfoGYhOay92abL22Jmo=";
           dontNpmBuild = true;
+          # npm links file: deps as relative symlinks; the installed tree moves,
+          # so the link dangles. Solidify it into a real copy.
+          postInstall = ''
+            appModules=$out/lib/node_modules/audiocontrol-hyperion-mqtt/node_modules
+            rm $appModules/homeostat
+            cp -r ${homeostat} $appModules/homeostat
+          '';
           meta = {
             description = "MQTT bridge for AudioControl Hyperion processors";
             license = pkgs.lib.licenses.mit;

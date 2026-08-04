@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "homeostat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785801606,
+        "narHash": "sha256-iOqAQyaSlgD91CeaTq+9GW/l6xXXfPKIuoorXZYnSkE=",
+        "ref": "refs/heads/main",
+        "rev": "4502c3b5a183f34cd4c3923a7dea28963300edc7",
+        "revCount": 3,
+        "type": "git",
+        "url": "ssh://git@github.com/mrobbetts/homeostat.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/mrobbetts/homeostat.git"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1785571196,
@@ -37,6 +53,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "homeostat": "homeostat",
         "nixpkgs": "nixpkgs"
       }
     },
