@@ -113,6 +113,12 @@
                     default = null;
                     description = "Human-readable name (capability facet $desc); defaults to id.";
                   };
+                  area = lib.mkOption {
+                    type = lib.types.nullOr lib.types.str;
+                    default = null;
+                    example = "ht";
+                    description = "System/zone grouping label for panels (capability facet $desc.area).";
+                  };
                   host = lib.mkOption { type = lib.types.str; description = "Device IP/hostname."; };
                   port = lib.mkOption { type = lib.types.port; default = 23; description = "TCP port."; };
                   pollIntervalMs = lib.mkOption {

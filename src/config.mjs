@@ -36,6 +36,7 @@ const normalizeDevices = (devices, cfg) => {
     return {
       id: d.id,
       name: d.name ?? d.id,
+      area: d.area ?? null, // system/zone grouping for panels
       host: d.host,
       port: d.port ?? 23,
       pollIntervalMs: d.pollIntervalMs ?? cfg.poll.intervalMs,

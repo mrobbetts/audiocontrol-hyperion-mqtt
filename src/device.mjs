@@ -95,6 +95,7 @@ export const createDevice = (cfg, mqttBus, parentLog) => {
           cfg: cfg.homeostat,
           deviceId: id,
           name: cfg.name,
+          area: cfg.area,
           nativePrefix: cfg.nativePrefix,
           onCommand: runCommand,
           log: log.child('homeostat'),

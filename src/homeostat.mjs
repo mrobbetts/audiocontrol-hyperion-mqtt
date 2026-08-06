@@ -29,11 +29,12 @@ export const PROP_TO_SUFFIX = Object.freeze({
   source: 'input',
 });
 
-export const descFor = ({ name, instance, nativePrefix }) => ({
+export const descFor = ({ name, area, instance, nativePrefix }) => ({
   schema: 'homeostat/1',
   version: 1,
   profile: 'speaker-system',
   name,
+  ...(area ? { area } : {}),
   vendor: 'AudioControl',
   instance,
   bridge: { name: 'audiocontrol-hyperion-mqtt' },
@@ -51,7 +52,7 @@ export const descFor = ({ name, instance, nativePrefix }) => ({
 // createHomeostat wires one facet device. onCommand(suffix, payload) receives
 // the native command vocabulary; reported state converges via onChange when
 // the device confirms (poll or command echo) — never optimistically.
-export const createHomeostat = ({ cfg, deviceId, name, nativePrefix, onCommand, log }) => {
+export const createHomeostat = ({ cfg, deviceId, name, area, nativePrefix, onCommand, log }) => {
   const instance = randomBytes(4).toString('hex');
   const root = cfg.root;
   const client = mqtt.connect(cfg.url, {
@@ -66,7 +67,7 @@ export const createHomeostat = ({ cfg, deviceId, name, nativePrefix, onCommand, 
     client,
     deviceId,
     root,
-    desc: descFor({ name, instance, nativePrefix }),
+    desc: descFor({ name, area, instance, nativePrefix }),
     onSet: (prop, value) => {
       const suffix = PROP_TO_SUFFIX[prop];
       if (!suffix) return false;

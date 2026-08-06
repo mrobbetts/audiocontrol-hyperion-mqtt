@@ -21,11 +21,11 @@
     "homeostat": {
       "flake": false,
       "locked": {
-        "lastModified": 1785801606,
-        "narHash": "sha256-iOqAQyaSlgD91CeaTq+9GW/l6xXXfPKIuoorXZYnSkE=",
+        "lastModified": 1786049441,
+        "narHash": "sha256-LKeylW2Ph2a0N22jO2QH9AG0iM4F7zKDHu+cQ/I/3EM=",
         "ref": "refs/heads/main",
-        "rev": "4502c3b5a183f34cd4c3923a7dea28963300edc7",
-        "revCount": 3,
+        "rev": "99387c9ef02195983dec58d0bc4db235b10516af",
+        "revCount": 5,
         "type": "git",
         "url": "ssh://git@github.com/mrobbetts/homeostat.git"
       },
@@ -36,11 +36,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1785571196,
-        "narHash": "sha256-KoTsyMQqnXQZq8deCEnu4QkyldkwH/bpMMhUcfMdGIw=",
+        "lastModified": 1785692966,
+        "narHash": "sha256-vUfIeBEfpbAfZ5zjgIkYk7eHBeVfCYVjLbWnMkseYnk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "148bab9c1c3c53136ecb44a6ea356a0ed5b39b06",
+        "rev": "643809054d65fdd466a63e3155b8c498cb483c04",
         "type": "github"
       },
       "original": {
