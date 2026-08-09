@@ -43,7 +43,7 @@ export const descFor = ({ name, area, instance, nativePrefix }) => ({
     power: { type: 'boolean', settable: true },
     volume: { type: 'float', format: '0:100:1', unit: '%', settable: true },
     mute: { type: 'boolean', settable: true },
-    source: { type: 'enum', format: 'earc,digital', settable: true },
+    source: { type: 'enum', format: 'earc,digital', settable: true, labels: { earc: 'eARC', digital: 'Digital' } },
     format: { type: 'string' },
     online: { type: 'boolean' },
   },
