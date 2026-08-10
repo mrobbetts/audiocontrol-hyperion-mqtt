@@ -25,7 +25,13 @@ export const createMqtt = ({ url, username, password, clientId, prefix, log }) =
     client.publish(bridgeStatus, 'online', { qos: 1, retain: true });
   });
   client.on('error', (err) => log.warn('mqtt error', { err: err.message }));
-  client.on('message', (topic, payload) => {
+  client.on('message', (topic, payload, packet) => {
+    // retained delivery on a command topic = a stale ghost replayed at (re)subscribe;
+    // executing it re-imposes an old command on every restart. Refuse, loudly when non-empty.
+    if (packet?.retain && /\/set(\/|$)/.test(topic)) {
+      if (payload.length) log.warn('ignored RETAINED ghost command', { topic, payload: payload.toString().slice(0, 40) });
+      return;
+    }
     const msg = payload.toString();
     for (const { re, keys, handler } of routes) {
       const m = re.exec(topic);
