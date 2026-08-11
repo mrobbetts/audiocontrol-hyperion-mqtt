@@ -7,9 +7,10 @@ import { commands } from '../src/protocol.mjs';
 const desc = () =>
   descFor({ name: 'Axis16', instance: 'abcd1234', nativePrefix: 'audiocontrol/hyperion/axis16' });
 
-test('descFor produces a valid speaker-system $desc', () => {
+test('descFor produces a valid source-processor $desc', () => {
   const result = validateDesc(desc());
   assert.deepEqual(result.ok, true, JSON.stringify(result.errors ?? []));
+  assert.equal(desc().profile, 'source-processor');
 });
 
 test('every settable capability property routes to a real native command', () => {

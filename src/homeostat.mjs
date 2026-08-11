@@ -1,6 +1,8 @@
-// homeostat.mjs — publishes each unit as a homeostat/1 `speaker-system`
+// homeostat.mjs — publishes each unit as a homeostat/1 `source-processor`
 // capability device (see the homeostat repo's SPEC.md), alongside the native
-// status/set surface. The facet gets its OWN mqtt connection: a connection
+// status/set surface. The Axis selects and decodes; it makes no sound — its
+// volume/mute are TRIMS, never room-level candidates (that's the profile's
+// promise; it was the misfit that motivated `source-processor`). The facet gets its OWN mqtt connection: a connection
 // carries exactly one LWT, the bridge's is spent on bridge/status, and each
 // capability device needs $state -> lost on ungraceful death.
 //
@@ -32,7 +34,7 @@ export const PROP_TO_SUFFIX = Object.freeze({
 export const descFor = ({ name, area, instance, nativePrefix }) => ({
   schema: 'homeostat/1',
   version: 1,
-  profile: 'speaker-system',
+  profile: 'source-processor',
   name,
   ...(area ? { area } : {}),
   vendor: 'AudioControl',
