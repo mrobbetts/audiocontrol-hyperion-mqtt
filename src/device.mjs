@@ -101,6 +101,11 @@ export const createDevice = (cfg, mqttBus, parentLog) => {
           log: log.child('homeostat'),
         });
       }
+      // Unreachable until proven otherwise: connection state is published on EDGES, and a
+      // failed first connect is not an edge from the initial `false` — a unit that is
+      // already dead at bridge start would keep the previous run's retained `true`.
+      mqttBus.publishConnected(id, false);
+      homeostat?.onChange(['connected'], false);
       transport.start();
       pollTimer = setInterval(() => pollOnce(polls.core), cfg.pollIntervalMs);
       log.info('device started', { host: cfg.host, port: cfg.port, pollIntervalMs: cfg.pollIntervalMs });
