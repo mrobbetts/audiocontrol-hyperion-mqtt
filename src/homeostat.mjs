@@ -33,8 +33,10 @@ export const PROP_TO_SUFFIX = Object.freeze({
 
 export const descFor = ({ name, area, instance, nativePrefix }) => ({
   schema: 'homeostat/1',
-  version: 1,
-  profile: 'source-processor',
+  version: 2,
+  // an AVR is a powered unit (appliance: power with a target, online) that also decodes
+  // and switches (source-processor); the two floors compose
+  profile: ['appliance', 'source-processor'],
   name,
   ...(area ? { area } : {}),
   vendor: 'AudioControl',
@@ -42,7 +44,7 @@ export const descFor = ({ name, area, instance, nativePrefix }) => ({
   bridge: { name: 'audiocontrol-hyperion-mqtt' },
   native: { prefix: nativePrefix, protocol: 'audiocontrol-hyperion-mqtt/1' },
   properties: {
-    power: { type: 'boolean', settable: true },
+    power: { type: 'boolean', settable: true, target: true },
     volume: { type: 'float', format: '0:100:1', unit: '%', settable: true },
     mute: { type: 'boolean', settable: true },
     source: { type: 'enum', format: 'earc,digital', settable: true, labels: { earc: 'eARC', digital: 'Digital' } },

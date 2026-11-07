@@ -21,11 +21,11 @@
     "homeostat": {
       "flake": false,
       "locked": {
-        "lastModified": 1786421211,
-        "narHash": "sha256-I/3UnnX23IWXopYXAYY7QhpEkAozvzeI0LC3Ng79OKE=",
+        "lastModified": 1794010858,
+        "narHash": "sha256-NdNyEy0F1P61WXeWbXMmsOdEnaMN63xVMNAuYUDTxng=",
         "ref": "refs/heads/main",
-        "rev": "f8f8c30f055581b542c65a711023b671bf8f0a93",
-        "revCount": 18,
+        "rev": "3d48a2ac669ccc04205cc3bd01750fd3bb8d4f1b",
+        "revCount": 50,
         "type": "git",
         "url": "ssh://git@github.com/mrobbetts/homeostat.git"
       },
